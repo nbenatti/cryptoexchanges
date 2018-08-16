@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">CryptoExchanges</string>
+    <string name="import_placeholder">Enter amount</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="stats">stats</string>
+    <string name="title_activity_stats_viewer">StatsViewer</string>
+    <string name="market_status_in_menu">Market status: </string>
+    <string name="quota_limit_in_menu">Number of fetches available: </string>
+    <string name="quota_used_in_menu">Number of fetches executed: </string>
+    <string name="quota_rem_in_menu">Number of fetches remaining: </string>
+    <string name="hours_until_reset_in_menu">Hours until reset: </string>
+</resources>
