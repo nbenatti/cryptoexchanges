@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
     private Spinner fromSpinner, toSpinner;
     private List<String> fromSpinnerData, toSpinnerData;
     private ArrayAdapter<String> fromSpinnerAdpt, toSpinnerAdpt;
-    private Button refreshButton;
+    private Button refreshButton, swapButton;
 
     // elenco dei cambi valuta (modificato durante aggiornamento dati)
     private Map<Pair, Double> exchanges;
@@ -61,6 +61,7 @@ public class MainActivity extends Activity {
         fromSpinner = findViewById(R.id.from_spinner);
         toSpinner = findViewById(R.id.to_spinner);
         refreshButton = findViewById(R.id.refresh_button);
+        swapButton = findViewById(R.id.swap_button);
         exchanges = new ConcurrentHashMap<>();
 
         // riempi gli spinner
@@ -69,8 +70,6 @@ public class MainActivity extends Activity {
         toSpinnerData = new ArrayList<>();
 
         fillSpinnersData(fromSpinnerData, toSpinnerData);
-        fromSpinner.setSelection(getIndexOf(fromSpinner, "Bitcoin\t\t[" + Utils.currencyCodes.get("Bitcoin") + "]"));
-        toSpinner.setSelection(getIndexOf(toSpinner, "Euro\t\t[" + Utils.currencyCodes.get("Euro") + "]"));
 
         fromSpinnerAdpt = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, fromSpinnerData);
         toSpinnerAdpt = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, toSpinnerData);
@@ -80,6 +79,10 @@ public class MainActivity extends Activity {
 
         fromSpinner.setAdapter(fromSpinnerAdpt);
         toSpinner.setAdapter(toSpinnerAdpt);
+
+        // la conversione di default è Bitcoin-Euro
+        fromSpinner.setSelection(getIndexOf(fromSpinner, "Bitcoin\t\t[" + Utils.currencyCodes.get("Bitcoin") + "]"));
+        toSpinner.setSelection(getIndexOf(toSpinner, "Euro\t\t[" + Utils.currencyCodes.get("Euro") + "]"));
 
         // prendi i dati dei cambi-valuta
 
@@ -117,9 +120,9 @@ public class MainActivity extends Activity {
                 String[] fromCoin = ((String)fromSpinner.getSelectedItem()).split("\t\t");
                 String[] toCoin = ((String)toSpinner.getSelectedItem()).split("\t\t");
 
-                if(fromCoin.equals(toCoin)) {
-
-                    //Toast.makeText(null, "you cannot select the same currency", Toast.LENGTH_SHORT);
+                if(fromCoin[0].equals(toCoin[0])) {
+                    Log.d("EQUAL", "onTextChanged: valori uguali");
+                    to.setText(from.getText());
                 }
                 else {
                     if (!s.toString().isEmpty()) {
@@ -127,8 +130,9 @@ public class MainActivity extends Activity {
                                 fromCoin[1].substring(1, fromCoin[1].length() - 1),
                                 toCoin[1].substring(1, fromCoin[1].length() - 1));
 
-                        to.setText(String.format(Locale.US, "%.2f", conversionResult));
-                        //from.setText(String.format(Locale.US, "%.2f", Double.parseDouble(from.getText().toString())));
+                        //to.setText(String.format(Locale.US, "%.2f", conversionResult));
+
+                        formatConversionResult(conversionResult, "%.2f");
                     } else
                         to.setText("");
                 }
@@ -180,6 +184,8 @@ public class MainActivity extends Activity {
     }
 
     public double convert(double fromImport, String fromCoin, String toCoin) {
+
+        Log.d("FUNCDATA", fromImport + ", " + fromCoin + ", " + toCoin);
 
         double res = exchanges.get(new Pair<>(fromCoin, toCoin));
 
@@ -243,5 +249,33 @@ public class MainActivity extends Activity {
     public void grabData(View v) {
 
         updateExchanges(requests);
+    }
+
+    private void formatConversionResult(double conversionResult, String format) {
+
+        to.setText(String.format(Locale.US, format, conversionResult));
+    }
+
+    public void swapSpinnersContent(View v) {
+
+        if(from.getText().toString().isEmpty() || to.getText().toString().isEmpty())
+            return;
+
+        int tmp = fromSpinner.getSelectedItemPosition();
+
+        fromSpinner.setSelection(toSpinner.getSelectedItemPosition());
+        toSpinner.setSelection(tmp);
+
+        Log.d("STRINGS", fromSpinner.getSelectedItem().toString().split("\t\t")[0]);
+
+        String fromCurrCode = Utils.currencyCodes.get(fromSpinner.getSelectedItem().toString().split("\t\t")[0]);
+        String toCurrCode = Utils.currencyCodes.get(toSpinner.getSelectedItem().toString().split("\t\t")[0]);
+
+        Log.d("CIAO", from.getText().toString());
+
+        // riesegui la conversione
+        double convRes = convert(Double.parseDouble(from.getText().toString()), fromCurrCode, toCurrCode);
+
+        formatConversionResult(convRes, "%.2f");
     }
 }
