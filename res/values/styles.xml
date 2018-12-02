@@ -5,4 +5,8 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <!-- Splash screen theme -->
+    <style name="SplashTheme">
+        <item name="android:windowBackground">@drawable/activity_splash</item>
+    </style>
 </resources>

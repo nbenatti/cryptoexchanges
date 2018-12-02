@@ -12,13 +12,16 @@ public class Splash extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent i = new Intent(Splash.this, MainActivity.class);
-            }
-        }, startDelay);
+        try {
+            Thread.sleep(1000);
+        }
+        catch(InterruptedException e) {
+            return;
+        }
+
+        startActivity(new Intent(this, MainActivity.class));
+
+        finish();
     }
 }

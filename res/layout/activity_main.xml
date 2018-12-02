@@ -8,9 +8,8 @@
 
     <EditText
         android:id="@+id/from_input"
-        android:layout_width="126dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
         android:ems="10"
         android:hint="@string/from"
         android:inputType="numberDecimal"
@@ -22,9 +21,8 @@
 
     <EditText
         android:id="@+id/to_input"
-        android:layout_width="126dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
         android:layout_marginStart="79dp"
         android:clickable="false"
         android:cursorVisible="false"
@@ -35,32 +33,35 @@
         android:inputType="numberDecimal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/from_input"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.198" />
+        app:layout_constraintVertical_bias="0.197" />
 
     <Spinner
         android:id="@+id/from_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="64dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toTopOf="@+id/from_input"
         app:layout_constraintEnd_toStartOf="@+id/to_spinner"
-        app:layout_constraintHorizontal_bias="0.268"
+        app:layout_constraintHorizontal_bias="0.159"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.09" />
 
     <Spinner
         android:id="@+id/to_spinner"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="64dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toTopOf="@+id/to_input"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/from_spinner"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.09" />
 

@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -106,6 +107,8 @@ public class MainActivity extends Activity {
 
         Log.d("CAMBI_VALUTA_FINALI", exchanges.toString());
 
+        // === listener del campo di testo ===
+
         from.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -117,7 +120,7 @@ public class MainActivity extends Activity {
 
                 Log.d("SPINNER_VALUE", fromSpinner.getSelectedItem() + ", " + toSpinner.getSelectedItem());
 
-                String[] fromCoin = ((String)fromSpinner.getSelectedItem()).split("\t\t");
+                /*String[] fromCoin = ((String)fromSpinner.getSelectedItem()).split("\t\t");
                 String[] toCoin = ((String)toSpinner.getSelectedItem()).split("\t\t");
 
                 if(fromCoin[0].equals(toCoin[0])) {
@@ -135,16 +138,78 @@ public class MainActivity extends Activity {
                         formatConversionResult(conversionResult, "%.2f");
                     } else
                         to.setText("");
-                }
+                }*/
+
+                conversionTask(s.toString());
             }
 
             @Override
             public void afterTextChanged(Editable s) {}
+
         });
+
+        // =======================================================
+
+        // === listener di cambio valore degli spinner ===
+        fromSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("SPINNER_VALUE_CHANGED", fromSpinner.getSelectedItem().toString());
+
+                conversionTask(from.getText().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
+
+        toSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("SPINNER_VALUE_CHANGED", toSpinner.getSelectedItem().toString());
+
+                conversionTask(from.getText().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    /**
+     * esegue il processo di conversione
+     * [acquisizione dati] -> [conversione] -> [visualizzazione]
+     */
+    protected void conversionTask(String s) {
+
+        String[] fromCoin = ((String)fromSpinner.getSelectedItem()).split("\t\t");
+        String[] toCoin = ((String)toSpinner.getSelectedItem()).split("\t\t");
+
+        if(fromCoin[0].equals(toCoin[0])) {
+            Log.d("EQUAL", "onTextChanged: valori uguali");
+            to.setText(from.getText());
+        }
+        else {
+            if (!s.isEmpty()) {
+                double conversionResult = convert(Double.parseDouble(s.toString()),
+                        fromCoin[1].substring(1, fromCoin[1].length() - 1),
+                        toCoin[1].substring(1, fromCoin[1].length() - 1));
+
+                //to.setText(String.format(Locale.US, "%.2f", conversionResult));
+
+                formatConversionResult(conversionResult, "%.2f");
+            } else
+                to.setText("");
+        }
     }
 
     /* === gestione del menu opzioni === */
 
+    /**
+     * codice eseguito al momento della creazione del menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -153,6 +218,11 @@ public class MainActivity extends Activity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * eseguito all'entrata nel menu opzioni
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
@@ -174,6 +244,13 @@ public class MainActivity extends Activity {
         return true;
     }
 
+    // ==========================================
+
+    /**
+     * riempie gli spinner
+     * @param fsd
+     * @param tsd
+     */
     public void fillSpinnersData(List<String> fsd, List<String> tsd) {
 
         for(String key : Utils.currencyCodes.keySet()) {
@@ -183,6 +260,13 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * esegue una conversione
+     * @param fromImport importo di partenza
+     * @param fromCoin moneta di partenza
+     * @param toCoin moneta di arrivo
+     * @return importo di arrivo
+     */
     public double convert(double fromImport, String fromCoin, String toCoin) {
 
         Log.d("FUNCDATA", fromImport + ", " + fromCoin + ", " + toCoin);
@@ -237,7 +321,7 @@ public class MainActivity extends Activity {
             }
         }
 
-        // ricava i dati dei cambi simmetrici
+        // calcola i cambi simmetrici
 
         for (Pair it : exchanges.keySet()) {
 
@@ -245,7 +329,9 @@ public class MainActivity extends Activity {
         }
     }
 
-    // wrapper del metodo eseguito dal refreshButton
+    /**
+     * wrapper del metodo eseguito dal refreshButton
+     */
     public void grabData(View v) {
 
         updateExchanges(requests);
@@ -256,6 +342,10 @@ public class MainActivity extends Activity {
         to.setText(String.format(Locale.US, format, conversionResult));
     }
 
+    /**
+     * scambia le posizione delle valute
+     * @param v vista
+     */
     public void swapSpinnersContent(View v) {
 
         if(from.getText().toString().isEmpty() || to.getText().toString().isEmpty())
