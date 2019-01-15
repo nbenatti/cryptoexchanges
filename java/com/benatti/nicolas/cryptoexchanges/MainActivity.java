@@ -25,9 +25,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
@@ -56,6 +58,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        List<String> currencyNames = Utils.getCoinNames();
 
         from = findViewById(R.id.from_input);
         to = findViewById(R.id.to_input);
@@ -65,7 +68,7 @@ public class MainActivity extends Activity {
         swapButton = findViewById(R.id.swap_button);
         exchanges = new ConcurrentHashMap<>();
 
-        // riempi gli spinner
+        // === riempi gli spinner ===
 
         fromSpinnerData = new ArrayList<>();
         toSpinnerData = new ArrayList<>();
@@ -81,14 +84,15 @@ public class MainActivity extends Activity {
         fromSpinner.setAdapter(fromSpinnerAdpt);
         toSpinner.setAdapter(toSpinnerAdpt);
 
-        // la conversione di default è Bitcoin-Euro
         fromSpinner.setSelection(getIndexOf(fromSpinner, "Bitcoin\t\t[" + Utils.currencyCodes.get("Bitcoin") + "]"));
         toSpinner.setSelection(getIndexOf(toSpinner, "Euro\t\t[" + Utils.currencyCodes.get("Euro") + "]"));
 
-        // prendi i dati dei cambi-valuta
+        // ==========================
 
+        // === acquisisci dati sul cambio valuta ===
         requests = new ArrayList<>();
 
+        // costruzione tabella dei cambi valuta
         // non vengono eseguite richieste "simmetriche" (es. BTC-EUR, ma non EUR-BTC)
         for (int i = 0; i < Utils.currencyCodes.size(); ++i) {
             for(int j = i+1; j < Utils.currencyCodes.size(); ++j) {
@@ -96,13 +100,14 @@ public class MainActivity extends Activity {
                 //Log.d("DUMP", Utils.currencyCodes.get(Utils.currencyNames.get(i)) + ", " + Utils.currencyCodes.get(Utils.currencyNames.get(j)));
 
                 requests.add("https://forex.1forge.com/1.0.3/convert?from=" +
-                        Utils.currencyCodes.get(Utils.currencyNames.get(i)) + "&to=" +
-                        Utils.currencyCodes.get(Utils.currencyNames.get(j)) + "&quantity=1&api_key=" + Utils.apiKey);
+                        Utils.currencyCodes.get(currencyNames.get(i)) + "&to=" +
+                        Utils.currencyCodes.get(currencyNames.get(j)) + "&quantity=1&api_key=" + Utils.apiKey);
             }
         }
 
-        // delega il fetching dei dati a thread secondario
+        // =========================================
 
+        // delega il download dei dati a thread secondario
         updateExchanges(requests);
 
         Log.d("CAMBI_VALUTA_FINALI", exchanges.toString());
@@ -174,6 +179,8 @@ public class MainActivity extends Activity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
+
+        // ===============================================
     }
 
     /**

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CryptoExchanges</string>
+    <string name="app_name">Crypto coin converter</string>
     <string name="import_placeholder">Enter amount</string>
     <string name="from">From</string>
     <string name="to">To</string>

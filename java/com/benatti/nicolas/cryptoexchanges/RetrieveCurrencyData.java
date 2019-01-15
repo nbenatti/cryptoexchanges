@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 public class RetrieveCurrencyData extends AsyncTask<String, Void, ArrayList<String>> {
 
-    // wrapper delle funzionalità dell'API
-    private ApiConnectionManager apiConnector = ApiConnectionManager.getInstance();
+    // wrapper delle funzionalità del web service
+    private WebServiceConnectionManager apiConnector = WebServiceConnectionManager.getInstance();
 
     @Override
     protected ArrayList<String> doInBackground(String... strings) {
